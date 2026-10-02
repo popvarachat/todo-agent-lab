@@ -1,0 +1,4 @@
+Meeting: Weekly Project Review
+ACTION: ติดตาม DWG กับทีม CXD owner: Pop due: 2026-10-09
+Decision: ใช้แบบ Revision B
+TODO: สรุปผล PPI owner: Coordinator due: 2026-10-12

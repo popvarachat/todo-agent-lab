@@ -151,3 +151,49 @@ For a local demo, use `provider: json_file` with `examples/sample_tasks.json`.
 ## License
 
 MIT
+
+## v0.2 agentic workflow
+
+The repository now includes all 10 planned use-case paths at pilot level:
+
+1. Morning Radar
+2. Follow-up proposal generation
+3. Meeting intake
+4. Email intake
+5. Smart priority ranking
+6. Stale detection
+7. HOLD governance
+8. Task Doctor
+9. Weekly executive brief
+10. Conversational task query
+
+### Human-approved write-back
+
+Write-back is implemented but intentionally fail-closed.
+
+```powershell
+# 1) Generate a proposal using a JSON payload file
+python -m todo_agent.cli propose-write --task-id "<TASK_ID>" --action-type patch_task --payload-file ".\\my_change.json" --reason "approved business reason"
+
+# 2) Dry-run the proposal first
+python -m todo_agent.cli approve <PROPOSAL_ID>
+
+# 3) Execute only after human approval
+python -m todo_agent.cli approve <PROPOSAL_ID> --execute --confirm YES
+```
+
+Supported write operations:
+- patch Planner task
+- patch Planner task details
+- create Planner task
+
+Every executed write is appended to `output/audit.jsonl`.
+
+### Meeting / Email intake without paid AI API
+
+```powershell
+python -m todo_agent.cli intake --kind meeting --file examples\\meeting_notes.txt
+python -m todo_agent.cli intake --kind email --file examples\\email_sample.txt
+```
+
+These create drafts only. ChatGPT / OI can enrich the draft before any Planner write is proposed.

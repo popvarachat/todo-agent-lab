@@ -1,31 +1,43 @@
 import json
 from pathlib import Path
 from collections import Counter
+
 from todo_agent.providers.planner import PlannerProvider
 from todo_agent.providers.json_file import JsonFileProvider
 from todo_agent.providers.microsoft_todo import MicrosoftToDoProvider
 from todo_agent.agents.radar import inspect_task as radar_inspect
 from todo_agent.agents.doctor import inspect_task as doctor_inspect
+from todo_agent.agents.hold import inspect_task as hold_inspect
 from todo_agent.agents.suggest import suggest
 from todo_agent.agents.weekly import build_weekly_summary
+from todo_agent.agents.followup import build_message
+from todo_agent.actions.models import ActionProposal
+from todo_agent.actions.queue import proposal_id, save_queue
+
+def build_provider(cfg):
+    name=cfg.get("provider","microsoft_planner")
+    if name=="json_file":
+        return JsonFileProvider(cfg["data_path"])
+    if name=="microsoft_todo":
+        return MicrosoftToDoProvider(cfg.get("list_id","all"))
+    return PlannerProvider(cfg["plan_id"])
 
 def run(config_path: str):
-    root = Path(config_path).resolve().parents[1]
-    cfg = json.loads(Path(config_path).read_text(encoding="utf-8-sig"))
-    provider_name = cfg.get("provider","microsoft_planner")
-    if provider_name == "json_file":
-        provider = JsonFileProvider(cfg["data_path"])
-    elif provider_name == "microsoft_todo":
-        provider = MicrosoftToDoProvider(cfg.get("list_id","all"))
-    else:
-        provider = PlannerProvider(cfg["plan_id"])
-    tasks = provider.list_tasks()
-    active = [t for t in tasks if t.percent_complete < 100]
+    root=Path(config_path).resolve().parents[1]
+    cfg=json.loads(Path(config_path).read_text(encoding="utf-8-sig"))
+    provider=build_provider(cfg)
+    tasks=provider.list_tasks()
+    active=[t for t in tasks if t.percent_complete < 100]
 
     findings=[]
+    task_findings={}
     for t in active:
-        findings += radar_inspect(t,cfg.get("stale_days",14),cfg.get("due_soon_days",7))
-        findings += doctor_inspect(t)
+        fs=[]
+        fs += radar_inspect(t,cfg.get("stale_days",14),cfg.get("due_soon_days",7))
+        fs += doctor_inspect(t)
+        fs += hold_inspect(t)
+        findings += fs
+        task_findings[t.id]=fs
 
     counts=Counter(f.kind for f in findings)
     score={}
@@ -33,9 +45,23 @@ def run(config_path: str):
         score[f.task_id]=score.get(f.task_id,0)+f.severity
     ranked=sorted(active,key=lambda t:(-score.get(t.id,0),t.due or "9999"))
 
-    task_findings={}
-    for f in findings:
-        task_findings.setdefault(f.task_id,[]).append(f)
+    proposals=[]
+    for t in ranked:
+        fs=task_findings.get(t.id,[])
+        msg=build_message(t,fs)
+        if msg:
+            proposals.append(ActionProposal(
+                id=proposal_id(),task_id=t.id,title=t.title,
+                action_type="follow_up",reason="; ".join(f.kind for f in fs if f.kind in ("overdue","stale")),
+                risk="medium",payload={"message":msg}
+            ))
+        if "hold" in t.bucket.lower():
+            proposals.append(ActionProposal(
+                id=proposal_id(),task_id=t.id,title=t.title,
+                action_type="review_hold",reason="HOLD governance review",
+                risk="low",payload={}
+            ))
+
     result={
       "provider":provider.provider_name(),
       "active_tasks":len(active),
@@ -45,12 +71,16 @@ def run(config_path: str):
                  "score":score.get(t.id,0),"due":t.due,
                  "suggestions":suggest(t,task_findings.get(t.id,[]))}
                 for t in ranked],
-      "findings":[f.__dict__ for f in findings]
+      "findings":[f.__dict__ for f in findings],
+      "proposals":[p.__dict__ for p in proposals]
     }
+
     outdir=root/"output"
     outdir.mkdir(exist_ok=True)
     (outdir/"agent_result.json").write_text(
         json.dumps(result,ensure_ascii=False,indent=2),encoding="utf-8")
+    save_queue(outdir/"proposals.json",proposals)
+
     lines=["# Todo Agent Report","",
            f"Provider: **{provider.provider_name()}**",
            f"Active tasks: **{len(active)}**","",
@@ -66,6 +96,8 @@ def run(config_path: str):
         lines.append(f"- **{t.title}** | {t.bucket} | score {score.get(t.id,0)} | due {t.due or '-'}")
         for idea in ideas[:3]:
             lines.append(f"  - Suggest: {idea}")
-    lines += ["","_Read-only pilot: no task was changed._"]
+    lines += ["","## Approval Queue",f"- Proposed actions: **{len(proposals)}**",
+              "- Follow-up and HOLD items remain advisory until explicitly approved.",
+              "","_READ/SUGGEST mode: no live task was modified._"]
     (outdir/"agent_report.md").write_text("\n".join(lines),encoding="utf-8")
     return result
