@@ -1,0 +1,10 @@
+{
+  "provider": "microsoft_planner",
+  "plan_id": "PUT_YOUR_PLAN_ID_HERE",
+  "plan_name": "Your Plan",
+  "timezone": "Asia/Bangkok",
+  "stale_days": 14,
+  "due_soon_days": 7,
+  "read_only": true,
+  "human_gate": true
+}

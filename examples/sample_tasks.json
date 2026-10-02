@@ -1,0 +1,16 @@
+{
+  "tasks": [
+    {
+      "id": "DEMO-1",
+      "title": "Prepare weekly report",
+      "bucket": "Monitor Weekly",
+      "due": "2026-10-01T10:00:00Z",
+      "created": "2026-09-01T10:00:00Z",
+      "percent_complete": 50,
+      "priority": 1,
+      "description": "",
+      "assignments": {},
+      "checklist": {}
+    }
+  ]
+}
