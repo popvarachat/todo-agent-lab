@@ -11,7 +11,7 @@ from todo_agent.agents.weekly import build_weekly_summary
 
 def run(config_path: str):
     root = Path(config_path).resolve().parents[1]
-    cfg = json.loads(Path(config_path).read_text(encoding="utf-8"))
+    cfg = json.loads(Path(config_path).read_text(encoding="utf-8-sig"))
     provider_name = cfg.get("provider","microsoft_planner")
     if provider_name == "json_file":
         provider = JsonFileProvider(cfg["data_path"])
