@@ -76,7 +76,7 @@ def build_parser():
 
     p=sub.add_parser("propose-write")
     p.add_argument("--task-id",required=True)
-    p.add_argument("--action-type",choices=["patch_task","patch_details"],required=True)
+    p.add_argument("--action-type",choices=["patch_task","patch_details","create_task"],required=True)
     payload_group=p.add_mutually_exclusive_group(required=True)
     payload_group.add_argument("--payload",help='JSON payload, e.g. {"priority":3}')
     payload_group.add_argument("--payload-file",help="Path to JSON payload file")
