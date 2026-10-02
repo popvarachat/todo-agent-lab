@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f6f9ff">
+<title>Todo Agent Lab · Executive Business Workflow</title>
+<meta name="description" content="Executive business workflow and architecture for a forkable Todo/Planner Agent system.">
+<style>
+:root{
+  --ink:#17233d;--muted:#66758f;--line:#dfe8f5;--blue:#2563eb;--cyan:#16a7d8;
+  --violet:#7c3aed;--mint:#14b88a;--amber:#e79b18;--rose:#e6536f;
+  --bg:#f6f9ff;--card:rgba(255,255,255,.86);--shadow:0 18px 50px rgba(57,79,120,.12);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,"Segoe UI","Noto Sans Thai",system-ui,sans-serif;color:var(--ink);
+background:
+radial-gradient(circle at 10% 0%,rgba(37,99,235,.12),transparent 28%),
+radial-gradient(circle at 90% 0%,rgba(124,58,237,.11),transparent 28%),
+linear-gradient(180deg,#fbfdff,#f4f8ff 45%,#f9fbff)}
+a{color:inherit}
+.wrap{max-width:1380px;margin:auto;padding:32px 20px 56px}
+.hero{position:relative;overflow:hidden;border:1px solid #e1eaf8;border-radius:30px;padding:34px 34px 30px;background:rgba(255,255,255,.82);box-shadow:var(--shadow)}
+.hero:before,.hero:after{content:"";position:absolute;border-radius:999px;filter:blur(1px);opacity:.55}
+.hero:before{width:280px;height:280px;right:-70px;top:-90px;background:linear-gradient(135deg,#c6e3ff,#e8d7ff)}
+.hero:after{width:180px;height:180px;left:-70px;bottom:-110px;background:linear-gradient(135deg,#d8fff2,#cae8ff)}
+.kicker{font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--blue)}
+h1{position:relative;margin:8px 0 12px;font-size:clamp(34px,5vw,62px);line-height:1.02;letter-spacing:-.045em}
+.grad{background:linear-gradient(90deg,#1d64da,#6953e8,#8b20a6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{position:relative;max-width:860px;margin:0;color:var(--muted);font-size:17px;line-height:1.7}
+.hero-actions{position:relative;display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:13px;padding:11px 14px;font-weight:800;font-size:14px}
+.primary{color:white;background:linear-gradient(135deg,#377bf5,#6b58e8);box-shadow:0 10px 24px rgba(66,99,220,.22)}
+.secondary{border:1px solid var(--line);background:#fff}
+.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:18px 0 24px}
+.metric{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 10px 28px rgba(66,84,120,.06)}
+.metric b{font-size:26px;display:block}.metric span{font-size:12px;color:var(--muted)}
+.section-head{display:flex;justify-content:space-between;gap:18px;align-items:end;margin:34px 2px 15px}
+.section-head h2{margin:0;font-size:27px;letter-spacing:-.025em}.section-head p{margin:0;color:var(--muted);font-size:14px}
+.flow{display:grid;grid-template-columns:1.05fr 1.15fr 1.55fr 1.2fr 1.2fr 1.05fr;gap:12px;align-items:stretch}
+.lane{position:relative;border-radius:22px;padding:15px;border:1px solid var(--line);min-height:530px;overflow:hidden}
+.lane h3{margin:0 0 4px;font-size:18px}.lane>p{margin:0 0 15px;color:var(--muted);font-size:12px}
+.lane1{background:linear-gradient(180deg,#eef6ff,#f8fbff)}
+.lane2{background:linear-gradient(180deg,#f3efff,#fbf9ff)}
+.lane3{background:linear-gradient(180deg,#eafbf6,#f8fffc)}
+.lane4{background:linear-gradient(180deg,#fff8e7,#fffdf7)}
+.lane5{background:linear-gradient(180deg,#fff0f3,#fff9fa)}
+.lane6{background:linear-gradient(180deg,#edf5ff,#f9fbff)}
+.node{background:rgba(255,255,255,.92);border:1px solid rgba(207,219,237,.9);border-radius:16px;padding:13px 13px;margin:10px 0;box-shadow:0 8px 22px rgba(66,84,120,.07)}
+.node strong{display:block;font-size:13px;margin-bottom:4px}.node small{display:block;color:var(--muted);font-size:11px;line-height:1.45}
+.arrow{text-align:center;color:#72809a;font-size:18px;margin:-3px 0}
+.decision{border-radius:16px;background:#fff;border:1px solid #f1d7a3;padding:12px;text-align:center;font-weight:800;font-size:12px;margin:11px 0;transform:rotate(0deg)}
+.banner{display:grid;grid-template-columns:1.5fr 1fr;gap:14px;margin-top:14px}
+.panel{border:1px solid var(--line);background:var(--card);border-radius:22px;padding:20px;box-shadow:0 10px 30px rgba(66,84,120,.06)}
+.panel h3{margin:0 0 12px}.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:7px 9px;border-radius:999px;font-size:11px;font-weight:800;border:1px solid var(--line);background:#fff}
+.ucases{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.uc{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:16px;min-height:146px}
+.uc b{display:block;color:var(--blue);font-size:12px;margin-bottom:7px}.uc strong{display:block;font-size:15px;margin-bottom:7px}.uc p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+.testgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.test{border:1px solid var(--line);border-radius:18px;padding:16px;background:#fff}
+.pass{display:inline-flex;padding:5px 8px;border-radius:999px;background:#e6faef;color:#147a46;font-size:11px;font-weight:900}
+.footer{margin-top:30px;border-top:1px solid var(--line);padding-top:18px;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+@media(max-width:1180px){.flow{grid-template-columns:repeat(3,1fr)}.ucases{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.metrics{grid-template-columns:repeat(2,1fr)}.flow{grid-template-columns:1fr}.ucases,.testgrid,.banner{grid-template-columns:1fr}.hero{padding:26px 20px}.lane{min-height:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section class="hero">
+  <div class="kicker">Executive System Architecture Infographic</div>
+  <h1><span class="grad">Todo Agent</span> · Executive Business Workflow</h1>
+  <p class="lead">เปลี่ยน Microsoft Planner / Todo จากกระดานงานที่ต้องคอยเปิดดูเอง ให้เป็น Source of Truth ที่มี Agent ช่วยอ่าน วิเคราะห์ เสนอ Action และเขียนกลับแบบมี Human Gate + Audit โดยยังคง Fork ไปเชื่อมกับระบบของคนอื่นได้ง่าย</p>
+  <div class="hero-actions">
+    <a class="btn primary" href="#workflow">View Executive Workflow</a>
+    <a class="btn secondary" href="https://github.com/popvarachat/todo-agent-lab" target="_blank" rel="noopener">Repository ↗</a>
+    <a class="btn secondary" href="https://github.com/popvarachat/todo-agent-lab/releases/tag/v0.2.0" target="_blank" rel="noopener">Release v0.2.0 ↗</a>
+  </div>
+</section>
+
+<section class="metrics">
+  <div class="metric"><b>10</b><span>Business use-case paths</span></div>
+  <div class="metric"><b>26</b><span>Active tasks detected in pilot</span></div>
+  <div class="metric"><b>28</b><span>Action proposals generated</span></div>
+  <div class="metric"><b>5/5</b><span>Automated workflow tests passed</span></div>
+  <div class="metric"><b>PASS</b><span>Golden UAT write-back</span></div>
+</section>
+
+<div id="workflow" class="section-head">
+  <div><h2>Executive Business Workflow</h2><p>Microsoft Fluent / Pastel Enterprise Theme</p></div>
+  <p>From tasks to business impact</p>
+</div>
+
+<section class="flow">
+  <article class="lane lane1">
+    <h3>1. Business Input</h3><p>Capture work from daily operations</p>
+    <div class="node"><strong>Meeting</strong><small>Action items from meetings</small></div>
+    <div class="node"><strong>Email</strong><small>Important requests and commitments</small></div>
+    <div class="node"><strong>Existing Planner Task</strong><small>Current work already tracked</small></div>
+  </article>
+  <article class="lane lane2">
+    <h3>2. Source of Truth</h3><p>Centralize and standardize</p>
+    <div class="node"><strong>Draft Action Item</strong><small>Extract and structure before commit</small></div>
+    <div class="arrow">↓</div>
+    <div class="node"><strong>Microsoft Planner / Todo</strong><small>Primary task datastore during pilot</small></div>
+    <div class="node"><strong>Provider Adapter</strong><small>Planner · To Do · JSON · future systems</small></div>
+  </article>
+  <article class="lane lane3">
+    <h3>3. Agent Intelligence</h3><p>Analyze, enrich, prioritize</p>
+    <div class="node"><strong>Read Agent</strong><small>Read task and context safely</small></div>
+    <div class="node"><strong>Morning Radar</strong><small>Daily executive focus</small></div>
+    <div class="node"><strong>Stale Detector</strong><small>Detect inactive work</small></div>
+    <div class="node"><strong>Task Doctor</strong><small>Check owner, due, description, checklist</small></div>
+    <div class="node"><strong>HOLD Intelligence</strong><small>Reason · resume condition · review date</small></div>
+    <div class="node"><strong>Smart Priority + Weekly Brief</strong><small>Rank work and summarize for executives</small></div>
+  </article>
+  <article class="lane lane4">
+    <h3>4. Executive Decision</h3><p>Review before action</p>
+    <div class="node"><strong>Executive Output</strong><small>Key insights and recommended actions</small></div>
+    <div class="decision">Action needed?</div>
+    <div class="node"><strong>Action Proposal</strong><small>Specific change, rationale and impact</small></div>
+    <div class="decision">Human Approve?</div>
+  </article>
+  <article class="lane lane5">
+    <h3>5. Controlled Execution</h3><p>Fail-closed write path</p>
+    <div class="node"><strong>Dry Run</strong><small>Preview the intended change</small></div>
+    <div class="arrow">↓</div>
+    <div class="node"><strong>Microsoft Graph Write</strong><small>Create or update an approved task</small></div>
+    <div class="arrow">↓</div>
+    <div class="node"><strong>Read-back Verify</strong><small>Confirm Graph returned expected state</small></div>
+    <div class="node"><strong>Audit Log</strong><small>Record approval attempt and execution</small></div>
+  </article>
+  <article class="lane lane6">
+    <h3>6. Business Value Check</h3><p>Measure and improve</p>
+    <div class="node"><strong>KPI Review</strong><small>Time saved · task quality · missed follow-ups</small></div>
+    <div class="decision">UAT Passed?</div>
+    <div class="node"><strong>Pilot Go Live</strong><small>Deploy to wider team</small></div>
+    <div class="node"><strong>Adjust Rules</strong><small>Tune thresholds and agent logic</small></div>
+  </article>
+</section>
+
+<section class="banner">
+  <div class="panel">
+    <h3>Safety Model</h3>
+    <div class="chips">
+      <span class="chip">READ · Analyze only</span>
+      <span class="chip">SUGGEST · Recommend next action</span>
+      <span class="chip">WRITE · Human approval required</span>
+      <span class="chip">VERIFY · Read-back after write</span>
+      <span class="chip">AUDIT · Every execution logged</span>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Current Pilot Status</h3>
+    <div class="chips">
+      <span class="chip">Planner: Connected</span>
+      <span class="chip">Write-back: Golden UAT PASS</span>
+      <span class="chip">GitHub: Forkable</span>
+      <span class="chip">CI: Passing</span>
+    </div>
+  </div>
+</section>
+
+<div class="section-head"><div><h2>10 Business Use Cases</h2><p>One agent engine, multiple business outcomes</p></div></div>
+<section class="ucases">
+  <div class="uc"><b>01</b><strong>Morning Radar</strong><p>สรุปงานที่ต้องเห็นก่อนเริ่มวัน</p></div>
+  <div class="uc"><b>02</b><strong>Auto Follow-up</strong><p>สร้างข้อความติดตามและเข้าคิวอนุมัติ</p></div>
+  <div class="uc"><b>03</b><strong>Meeting → Task</strong><p>แตก Action / Owner / Due เป็น Draft</p></div>
+  <div class="uc"><b>04</b><strong>Email → Task</strong><p>จับงานจาก Email โดยยังไม่สร้างทันที</p></div>
+  <div class="uc"><b>05</b><strong>Smart Priority</strong><p>จัดลำดับตาม overdue, stale และ priority</p></div>
+  <div class="uc"><b>06</b><strong>Stale Detector</strong><p>เจองานที่เงียบก่อนจะกลายเป็นปัญหา</p></div>
+  <div class="uc"><b>07</b><strong>HOLD Intelligence</strong><p>ตรวจเหตุผลพัก เงื่อนไข resume และ review date</p></div>
+  <div class="uc"><b>08</b><strong>Task Doctor</strong><p>ตรวจคุณภาพ Task ก่อนใช้ Agent ต่อ</p></div>
+  <div class="uc"><b>09</b><strong>Weekly Brief</strong><p>Executive summary สำหรับติดตามรายสัปดาห์</p></div>
+  <div class="uc"><b>10</b><strong>Conversational Todo</strong><p>ถามงานด้วยภาษาคนผ่าน CLI / Agent</p></div>
+</section>
+
+<div class="section-head"><div><h2>Golden UAT Evidence</h2><p>Controlled test on Microsoft Planner</p></div></div>
+<section class="testgrid">
+  <div class="test"><span class="pass">PASS</span><h3>Create Task</h3><p>Human-approved proposal created <strong>TEST - Todo Agent UAT</strong> in Planner.</p></div>
+  <div class="test"><span class="pass">PASS</span><h3>Update Task</h3><p>Priority changed via controlled Graph write and then read back successfully.</p></div>
+  <div class="test"><span class="pass">PASS</span><h3>Audit Trail</h3><p>Dry-run, approval attempt and executed actions were recorded in the audit log.</p></div>
+</section>
+
+<div class="section-head"><div><h2>Fork & Connect</h2><p>Designed for reuse outside the pilot account</p></div></div>
+<section class="panel">
+  <div class="chips">
+    <span class="chip">1 · Fork repository</span>
+    <span class="chip">2 · Login Microsoft account</span>
+    <span class="chip">3 · Paste Planner URL</span>
+    <span class="chip">4 · Run bootstrap.ps1</span>
+    <span class="chip">5 · Analyze in READ/SUGGEST mode</span>
+    <span class="chip">6 · Enable Human-gated WRITE when ready</span>
+  </div>
+</section>
+
+<footer class="footer">
+  <span>Todo Agent Lab · Public GitHub Edition</span>
+  <span>Architecture: Provider Adapter → Canonical Task Model → Agent Layer → Human Gate → Verify & Audit</span>
+</footer>
+</div>
+</body>
+</html>
