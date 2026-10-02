@@ -1,18 +1,17 @@
-import json, subprocess
 from todo_agent.models import Task
 from todo_agent.providers.base import TaskProvider
+from todo_agent.graph_client import GraphClient
 
 class PlannerProvider(TaskProvider):
     def __init__(self, plan_id: str):
         self.plan_id = plan_id
+        self.graph = GraphClient()
 
     def provider_name(self) -> str:
         return "microsoft_planner"
 
     def _graph(self, url: str):
-        cmd = ["az.cmd","rest","--method","get","--url",url,"--output","json"]
-        raw = subprocess.check_output(cmd, text=True, encoding="utf-8", errors="replace")
-        return json.loads(raw)
+        return self.graph.get(url)
 
     def list_tasks(self) -> list[Task]:
         buckets = self._graph(
