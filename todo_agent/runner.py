@@ -11,6 +11,7 @@ from todo_agent.agents.hold import inspect_task as hold_inspect
 from todo_agent.agents.suggest import suggest
 from todo_agent.agents.weekly import build_weekly_summary
 from todo_agent.agents.followup import build_message
+from todo_agent.agents.evidence_context import build_task_evidence
 from todo_agent.actions.models import ActionProposal
 from todo_agent.actions.queue import proposal_id, save_queue
 from todo_agent.shadows.council import review as shadow_review
@@ -40,6 +41,12 @@ def run(config_path: str):
         findings += fs
         task_findings[t.id]=fs
 
+    evidence_by_task={}
+    for t in active:
+        evidence_by_task[t.id]=build_task_evidence(t,task_findings.get(t.id,[]))
+
+    evidence_counts=Counter(x["evidence_quality"] for x in evidence_by_task.values())
+
     counts=Counter(f.kind for f in findings)
     score={}
     for f in findings:
@@ -64,12 +71,21 @@ def run(config_path: str):
             ))
 
     weekly=build_weekly_summary(len(active),findings)
-    shadow=shadow_review(weekly,dict(counts),len(proposals),provider.provider_name()) if cfg.get("shadow_mode",True) else {"mode":"OFF"}
+    evidence_summary={
+      "strong":evidence_counts.get("STRONG",0),
+      "moderate":evidence_counts.get("MODERATE",0),
+      "weak":evidence_counts.get("WEAK",0)
+    }
+    shadow=shadow_review(
+      weekly,dict(counts),len(proposals),provider.provider_name(),evidence_summary
+    ) if cfg.get("shadow_mode",True) else {"mode":"OFF"}
 
     result={
       "provider":provider.provider_name(),
       "active_tasks":len(active),
       "weekly_summary":weekly,
+      "evidence_summary":evidence_summary,
+      "evidence_by_task":evidence_by_task,
       "shadow_review":shadow,
       "counts":dict(counts),
       "ranked":[{"id":t.id,"title":t.title,"bucket":t.bucket,
@@ -95,6 +111,10 @@ def run(config_path: str):
     lines += ["","## Weekly Brief"]
     for k,v in result["weekly_summary"].items():
         lines.append(f"- {k}: **{v}**")
+    lines += ["","## Evidence Context",
+              f"- Strong evidence: **{evidence_summary['strong']}**",
+              f"- Moderate evidence: **{evidence_summary['moderate']}**",
+              f"- Weak evidence: **{evidence_summary['weak']}**"]
     lines += ["","## Morning Radar"]
     for t in ranked[:12]:
         ideas=suggest(t,task_findings.get(t.id,[]))

@@ -58,14 +58,15 @@ h1{position:relative;margin:8px 0 12px;font-size:clamp(34px,5vw,62px);line-heigh
 .panel h3{margin:0 0 12px}.chips{display:flex;gap:8px;flex-wrap:wrap}
 .chip{padding:7px 9px;border-radius:999px;font-size:11px;font-weight:800;border:1px solid var(--line);background:#fff}
 .ucases{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.agentgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.agentcard{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:16px}.agentcard b{display:inline-flex;padding:4px 7px;border-radius:999px;background:#eef3ff;color:#3a5dcc;font-size:10px;margin-bottom:7px}.agentcard h3{margin:2px 0 7px;font-size:15px}.agentio{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}.io{border:1px solid var(--line);border-radius:11px;padding:8px;background:#fff}.io strong{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.io span{font-size:11px;line-height:1.4}.branchgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.branchgrid .node{margin:5px 0}
 .uc{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:16px;min-height:146px}
 .uc b{display:block;color:var(--blue);font-size:12px;margin-bottom:7px}.uc strong{display:block;font-size:15px;margin-bottom:7px}.uc p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
 .testgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .test{border:1px solid var(--line);border-radius:18px;padding:16px;background:#fff}
 .pass{display:inline-flex;padding:5px 8px;border-radius:999px;background:#e6faef;color:#147a46;font-size:11px;font-weight:900}
 .footer{margin-top:30px;border-top:1px solid var(--line);padding-top:18px;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-@media(max-width:1180px){.flow{grid-template-columns:repeat(3,1fr)}.ucases{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:760px){.metrics{grid-template-columns:repeat(2,1fr)}.flow{grid-template-columns:1fr}.ucases,.testgrid,.banner{grid-template-columns:1fr}.hero{padding:26px 20px}.lane{min-height:auto}}
+@media(max-width:1180px){.flow{grid-template-columns:repeat(3,1fr)}.ucases{grid-template-columns:repeat(2,1fr)}.agentgrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.metrics{grid-template-columns:repeat(2,1fr)}.flow{grid-template-columns:1fr}.ucases,.testgrid,.banner,.agentgrid{grid-template-columns:1fr}.hero{padding:26px 20px}.lane{min-height:auto}.agentio,.branchgrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -77,15 +78,15 @@ h1{position:relative;margin:8px 0 12px;font-size:clamp(34px,5vw,62px);line-heigh
   <div class="hero-actions">
     <a class="btn primary" href="#workflow">View Executive Workflow</a>
     <a class="btn secondary" href="https://github.com/popvarachat/todo-agent-lab" target="_blank" rel="noopener">Repository ↗</a>
-    <a class="btn secondary" href="https://github.com/popvarachat/todo-agent-lab/releases/tag/v0.3.0" target="_blank" rel="noopener">Release v0.3.0 ↗</a>
+    <a class="btn secondary" href="https://github.com/popvarachat/todo-agent-lab/releases/tag/v0.4.0" target="_blank" rel="noopener">Release v0.4.0 ↗</a>
   </div>
 </section>
 
 <section class="metrics">
-  <div class="metric"><b>10</b><span>Business use-case paths</span></div>
+  <div class="metric"><b>13</b><span>Agent roles in the system</span></div>
   <div class="metric"><b>27</b><span>Active tasks detected in pilot</span></div>
   <div class="metric"><b>28</b><span>Action proposals generated</span></div>
-  <div class="metric"><b>6/6</b><span>Automated workflow tests passed</span></div>
+  <div class="metric"><b>9/9</b><span>Automated workflow tests passed</span></div>
   <div class="metric"><b>DUAL</b><span>RDC + JEV Shadow Decision</span></div>
 </section>
 
@@ -96,25 +97,39 @@ h1{position:relative;margin:8px 0 12px;font-size:clamp(34px,5vw,62px);line-heigh
 
 <section class="flow">
   <article class="lane lane1">
-    <h3>1. Business Input</h3><p>Capture work from daily operations</p>
-    <div class="node"><strong>Meeting</strong><small>Action items from meetings</small></div>
-    <div class="node"><strong>Email</strong><small>Important requests and commitments</small></div>
-    <div class="node"><strong>Existing Planner Task</strong><small>Current work already tracked</small></div>
+    <h3>1. Business Input</h3><p>Three independent entry paths</p>
+    <div class="branchgrid">
+      <div class="node"><strong>Meeting</strong><small>Notes / transcript / decisions</small></div>
+      <div class="node"><strong>Email</strong><small>Requests / commitments / follow-up</small></div>
+    </div>
+    <div class="node"><strong>Existing Planner / Todo</strong><small>Current operational backlog enters directly without re-creation</small></div>
   </article>
   <article class="lane lane2">
-    <h3>2. Source of Truth</h3><p>Centralize and standardize</p>
-    <div class="node"><strong>Draft Action Item</strong><small>Extract and structure before commit</small></div>
-    <div class="arrow">↓</div>
-    <div class="node"><strong>Microsoft Planner / Todo</strong><small>Primary task datastore during pilot</small></div>
+    <h3>2. Intake Intelligence</h3><p>Reason before committing new work</p>
+    <div class="branchgrid">
+      <div class="node"><strong>Meeting Intelligence Agent</strong><small>Extract Action · Owner · Due · missing context · confidence</small></div>
+      <div class="node"><strong>Email Intelligence Agent</strong><small>Classify actionable mail and produce structured task drafts</small></div>
+    </div>
     <div class="node"><strong>Provider Adapter</strong><small>Planner · To Do · JSON · future systems</small></div>
+    <div class="arrow">↓</div>
+    <div class="node"><strong>Canonical Task Model</strong><small>One standard contract for all downstream agents</small></div>
   </article>
   <article class="lane lane3">
-    <h3>3. Primary Agent</h3><p>Analyze, enrich, prioritize</p>
-    <div class="node"><strong>Read Agent</strong><small>Read task and context safely</small></div>
-    <div class="node"><strong>Morning Radar + Stale</strong><small>Find focus, overdue and inactive work</small></div>
-    <div class="node"><strong>Task Doctor + HOLD</strong><small>Check task quality and governance gaps</small></div>
-    <div class="node"><strong>Smart Priority + Weekly Brief</strong><small>Rank work and form the primary recommendation</small></div>
-    <div class="node"><strong>Primary Decision Draft</strong><small>Todo Agent proposes what should happen next</small></div>
+    <h3>3. Primary Intelligence Mesh</h3><p>Parallel analysis, not a train</p>
+    <div class="branchgrid">
+      <div class="node"><strong>Morning Radar Agent</strong><small>Overdue · Due soon · Stale · Urgent</small></div>
+      <div class="node"><strong>Task Doctor Agent</strong><small>Owner · Due · Description · Checklist quality</small></div>
+      <div class="node"><strong>HOLD Intelligence Agent</strong><small>Reason · Resume condition · Review date</small></div>
+      <div class="node"><strong>Evidence / Context Agent</strong><small>Build evidence bundle and strength score for each task</small></div>
+    </div>
+    <div class="arrow">↓</div>
+    <div class="branchgrid">
+      <div class="node"><strong>Follow-up Agent</strong><small>Draft follow-up when overdue or stale</small></div>
+      <div class="node"><strong>Next Action Agent</strong><small>Recommend owner / due / next step / HOLD review</small></div>
+      <div class="node"><strong>Weekly Brief Agent</strong><small>Aggregate KPI and executive summary</small></div>
+      <div class="node"><strong>Conversational Agent</strong><small>Read-only natural-language access to analyzed tasks</small></div>
+    </div>
+    <div class="node"><strong>Primary Decision Draft</strong><small>Combine findings, evidence and recommendations before shadow review</small></div>
   </article>
   <article class="lane lane4">
     <h3>4. Dual Shadow Council</h3><p>Independent second opinions</p>
@@ -173,6 +188,27 @@ h1{position:relative;margin:8px 0 12px;font-size:clamp(34px,5vw,62px);line-heigh
       <span class="chip">GitHub: Forkable · CI Passing</span>
     </div>
   </div>
+</section>
+
+<div class="section-head"><div><h2>13 Agent Roles</h2><p>หน้าที่ Input / Output แยกชัดเจน</p></div><p>Primary mesh + intake intelligence + dual shadow</p></div>
+<section class="agentgrid">
+  <div class="agentcard"><b>A01</b><h3>Morning Radar Agent</h3><p>หา overdue, due soon, stale และ urgent</p><div class="agentio"><div class="io"><strong>Input</strong><span>Canonical Task</span></div><div class="io"><strong>Output</strong><span>Risk findings + severity</span></div></div></div>
+  <div class="agentcard"><b>A02</b><h3>Task Doctor Agent</h3><p>ตรวจคุณภาพข้อมูล Task</p><div class="agentio"><div class="io"><strong>Input</strong><span>Task fields</span></div><div class="io"><strong>Output</strong><span>Missing owner / due / description / checklist</span></div></div></div>
+  <div class="agentcard"><b>A03</b><h3>HOLD Intelligence Agent</h3><p>ตรวจ governance ของงานพัก</p><div class="agentio"><div class="io"><strong>Input</strong><span>HOLD task + description</span></div><div class="io"><strong>Output</strong><span>Reason / resume / review gaps</span></div></div></div>
+
+  <div class="agentcard"><b>A04</b><h3>Follow-up Agent</h3><p>ร่างข้อความติดตามโดยไม่ส่งเอง</p><div class="agentio"><div class="io"><strong>Input</strong><span>Task + findings</span></div><div class="io"><strong>Output</strong><span>Follow-up draft</span></div></div></div>
+  <div class="agentcard"><b>A05</b><h3>Next Action Agent</h3><p>เสนอ Action ที่ควรทำต่อ</p><div class="agentio"><div class="io"><strong>Input</strong><span>Task + findings</span></div><div class="io"><strong>Output</strong><span>Suggested next actions</span></div></div></div>
+  <div class="agentcard"><b>A06</b><h3>Weekly Brief Agent</h3><p>รวมภาพเพื่อผู้บริหาร</p><div class="agentio"><div class="io"><strong>Input</strong><span>All findings</span></div><div class="io"><strong>Output</strong><span>KPI + executive summary</span></div></div></div>
+
+  <div class="agentcard"><b>A07</b><h3>Conversational Todo Agent</h3><p>ถามข้อมูล Task ด้วยภาษาคน</p><div class="agentio"><div class="io"><strong>Input</strong><span>Question + analyzed result</span></div><div class="io"><strong>Output</strong><span>Task shortlist / answer</span></div></div></div>
+  <div class="agentcard"><b>A08</b><h3>Meeting Intelligence Agent</h3><p>เข้าใจ Action จากประชุมก่อนสร้าง Task</p><div class="agentio"><div class="io"><strong>Input</strong><span>Meeting note / transcript</span></div><div class="io"><strong>Output</strong><span>Action draft + owner + due + confidence</span></div></div></div>
+  <div class="agentcard"><b>A09</b><h3>Email Intelligence Agent</h3><p>แยก Email ที่ควรกลายเป็นงาน</p><div class="agentio"><div class="io"><strong>Input</strong><span>Subject + body + sender</span></div><div class="io"><strong>Output</strong><span>Task draft + missing context + confidence</span></div></div></div>
+
+  <div class="agentcard"><b>A10</b><h3>Evidence / Context Agent</h3><p>สร้าง Evidence Bundle ก่อนตัดสินใจ</p><div class="agentio"><div class="io"><strong>Input</strong><span>Task + findings + source refs</span></div><div class="io"><strong>Output</strong><span>Evidence score + STRONG / MODERATE / WEAK</span></div></div></div>
+  <div class="agentcard"><b>A11</b><h3>RDC Shadow Agent</h3><p>ตรวจความเป็นไปได้และความเสี่ยงการ Execute</p><div class="agentio"><div class="io"><strong>Input</strong><span>Executive state</span></div><div class="io"><strong>Output</strong><span>Feasibility / risk / human review</span></div></div></div>
+  <div class="agentcard"><b>A12</b><h3>JEV Shadow Agent</h3><p>Second opinion แบบ typed decision</p><div class="agentio"><div class="io"><strong>Input</strong><span>Executive state + evidence summary</span></div><div class="io"><strong>Output</strong><span>Risk / evidence / routing / done signal</span></div></div></div>
+
+  <div class="agentcard"><b>A13</b><h3>Shadow Council Agent</h3><p>เทียบ Primary, RDC และ JEV</p><div class="agentio"><div class="io"><strong>Input</strong><span>Primary result + 2 shadow reviews</span></div><div class="io"><strong>Output</strong><span>Consensus / conflict / evidence gap / escalation</span></div></div></div>
 </section>
 
 <div class="section-head"><div><h2>10 Business Use Cases</h2><p>One agent engine, multiple business outcomes</p></div></div>

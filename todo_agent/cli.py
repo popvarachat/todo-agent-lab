@@ -4,6 +4,8 @@ from pathlib import Path
 from todo_agent.runner import run
 from todo_agent.agents.conversation import query_tasks
 from todo_agent.intake.parser import parse_file
+from todo_agent.agents.meeting_intelligence import analyze_meeting
+from todo_agent.agents.email_intelligence import analyze_email
 from todo_agent.actions.queue import load_queue
 from todo_agent.actions.gate import execute_proposal
 
@@ -14,6 +16,8 @@ def cmd_analyze(args):
     result=run(args.config)
     print(json.dumps({"active_tasks":result["active_tasks"],"counts":result["counts"],
                       "weekly_summary":result["weekly_summary"],
+                      "evidence_summary":result.get("evidence_summary",{}),
+                      "shadow_mode":result.get("shadow_review",{}).get("mode"),
                       "proposals":len(result["proposals"])},
                      ensure_ascii=False,indent=2))
 
@@ -25,10 +29,20 @@ def cmd_query(args):
 
 def cmd_intake(args):
     root=root_from_config(args.config)
-    items=parse_file(args.file,args.kind)
+    text=Path(args.file).read_text(encoding="utf-8-sig")
+    if args.kind=="meeting":
+        result=analyze_meeting(text,source_ref=args.file)
+    else:
+        lines=text.splitlines()
+        subject=""
+        body=text
+        if lines and lines[0].lower().startswith("subject:"):
+            subject=lines[0].split(":",1)[1].strip()
+            body="\n".join(lines[1:])
+        result=analyze_email(subject,body,source_ref=args.file)
     dest=root/"output"/f"{args.kind}_intake.json"
-    dest.write_text(json.dumps(items,ensure_ascii=False,indent=2),encoding="utf-8")
-    print(json.dumps({"items":len(items),"output":str(dest)},ensure_ascii=False,indent=2))
+    dest.write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding="utf-8")
+    print(json.dumps({"agent":result.get("agent"),"items":result.get("count",0),"output":str(dest)},ensure_ascii=False,indent=2))
 
 def cmd_propose_write(args):
     root=root_from_config(args.config)

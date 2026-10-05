@@ -235,3 +235,22 @@ Operational risk       Typed decision review
 - JEV is batched once per executive analyze cycle to control latency and API usage.
 
 See `docs/SHADOW_DECISION.md`.
+
+## v0.4 Intelligence Mesh
+
+The system now has **13 explicit agent roles**.
+
+New in v0.4:
+- Meeting Intelligence Agent
+- Email Intelligence Agent
+- Evidence / Context Agent
+- Evidence quality is attached to the executive state before JEV review
+- Intake is now an intelligence step rather than a raw parser step
+- The executive web now shows agent roles with Input / Output and a branching workflow
+
+Evidence quality from the latest pilot run:
+- STRONG: 26
+- MODERATE: 1
+- WEAK: 0
+
+See `docs/AGENTS.md`.
