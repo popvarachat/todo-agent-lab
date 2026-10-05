@@ -13,6 +13,7 @@ from todo_agent.agents.weekly import build_weekly_summary
 from todo_agent.agents.followup import build_message
 from todo_agent.actions.models import ActionProposal
 from todo_agent.actions.queue import proposal_id, save_queue
+from todo_agent.shadows.council import review as shadow_review
 
 def build_provider(cfg):
     name=cfg.get("provider","microsoft_planner")
@@ -62,10 +63,14 @@ def run(config_path: str):
                 risk="low",payload={}
             ))
 
+    weekly=build_weekly_summary(len(active),findings)
+    shadow=shadow_review(weekly,dict(counts),len(proposals),provider.provider_name()) if cfg.get("shadow_mode",True) else {"mode":"OFF"}
+
     result={
       "provider":provider.provider_name(),
       "active_tasks":len(active),
-      "weekly_summary":build_weekly_summary(len(active),findings),
+      "weekly_summary":weekly,
+      "shadow_review":shadow,
       "counts":dict(counts),
       "ranked":[{"id":t.id,"title":t.title,"bucket":t.bucket,
                  "score":score.get(t.id,0),"due":t.due,
@@ -96,6 +101,14 @@ def run(config_path: str):
         lines.append(f"- **{t.title}** | {t.bucket} | score {score.get(t.id,0)} | due {t.due or '-'}")
         for idea in ideas[:3]:
             lines.append(f"  - Suggest: {idea}")
+    lines += ["","## Shadow Decision Council",
+              f"- Mode: **{shadow.get('mode','OFF')}**",
+              f"- Primary authority: **{shadow.get('primary_decision_authority','Todo Agent + Human Gate')}**"]
+    if shadow.get("shadows"):
+        rdc=shadow["shadows"].get("rdc",{})
+        jev=shadow["shadows"].get("jev",{})
+        lines += [f"- RDC Shadow: **{rdc.get('recommendation','N/A')}** · score {rdc.get('score','-')}",
+                  f"- JEV Shadow: **{jev.get('status','N/A')}** · model {jev.get('model','-')} · authority=false"]
     lines += ["","## Approval Queue",f"- Proposed actions: **{len(proposals)}**",
               "- Follow-up and HOLD items remain advisory until explicitly approved.",
               "","_READ/SUGGEST mode: no live task was modified._"]

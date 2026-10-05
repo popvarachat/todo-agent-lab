@@ -38,7 +38,7 @@ h1{position:relative;margin:8px 0 12px;font-size:clamp(34px,5vw,62px);line-heigh
 .metric b{font-size:26px;display:block}.metric span{font-size:12px;color:var(--muted)}
 .section-head{display:flex;justify-content:space-between;gap:18px;align-items:end;margin:34px 2px 15px}
 .section-head h2{margin:0;font-size:27px;letter-spacing:-.025em}.section-head p{margin:0;color:var(--muted);font-size:14px}
-.flow{display:grid;grid-template-columns:1.05fr 1.15fr 1.55fr 1.2fr 1.2fr 1.05fr;gap:12px;align-items:stretch}
+.flow{display:grid;grid-template-columns:1fr 1.05fr 1.25fr 1.2fr 1.05fr 1.05fr 1fr;gap:10px;align-items:stretch}
 .lane{position:relative;border-radius:22px;padding:15px;border:1px solid var(--line);min-height:530px;overflow:hidden}
 .lane h3{margin:0 0 4px;font-size:18px}.lane>p{margin:0 0 15px;color:var(--muted);font-size:12px}
 .lane1{background:linear-gradient(180deg,#eef6ff,#f8fbff)}
@@ -46,7 +46,9 @@ h1{position:relative;margin:8px 0 12px;font-size:clamp(34px,5vw,62px);line-heigh
 .lane3{background:linear-gradient(180deg,#eafbf6,#f8fffc)}
 .lane4{background:linear-gradient(180deg,#fff8e7,#fffdf7)}
 .lane5{background:linear-gradient(180deg,#fff0f3,#fff9fa)}
-.lane6{background:linear-gradient(180deg,#edf5ff,#f9fbff)}
+.lane6{background:linear-gradient(180deg,#fff0f3,#fff9fa)}
+.lane7{background:linear-gradient(180deg,#edf5ff,#f9fbff)}
+.shadowpair{display:grid;grid-template-columns:1fr 1fr;gap:8px}.shadowpair .node{margin:6px 0}.shadowbadge{display:inline-flex;padding:4px 7px;border-radius:999px;background:#ede9fe;color:#6542c7;font-size:10px;font-weight:900;margin-bottom:6px}
 .node{background:rgba(255,255,255,.92);border:1px solid rgba(207,219,237,.9);border-radius:16px;padding:13px 13px;margin:10px 0;box-shadow:0 8px 22px rgba(66,84,120,.07)}
 .node strong{display:block;font-size:13px;margin-bottom:4px}.node small{display:block;color:var(--muted);font-size:11px;line-height:1.45}
 .arrow{text-align:center;color:#72809a;font-size:18px;margin:-3px 0}
@@ -71,20 +73,20 @@ h1{position:relative;margin:8px 0 12px;font-size:clamp(34px,5vw,62px);line-heigh
 <section class="hero">
   <div class="kicker">Executive System Architecture Infographic</div>
   <h1><span class="grad">Todo Agent</span> · Executive Business Workflow</h1>
-  <p class="lead">เปลี่ยน Microsoft Planner / Todo จากกระดานงานที่ต้องคอยเปิดดูเอง ให้เป็น Source of Truth ที่มี Agent ช่วยอ่าน วิเคราะห์ เสนอ Action และเขียนกลับแบบมี Human Gate + Audit โดยยังคง Fork ไปเชื่อมกับระบบของคนอื่นได้ง่าย</p>
+  <p class="lead">เปลี่ยน Microsoft Planner / Todo จากกระดานงานที่ต้องคอยเปิดดูเอง ให้เป็น Source of Truth ที่มี Todo Agent เป็นสมองหลัก และมี <strong>RDC + JEV ทำงานแบบ Dual Shadow</strong> ช่วยทบทวนความเสี่ยง ความเป็นไปได้ และคุณภาพการตัดสินใจก่อนเข้าสู่ Human Gate, Controlled Write, Verify และ Audit</p>
   <div class="hero-actions">
     <a class="btn primary" href="#workflow">View Executive Workflow</a>
     <a class="btn secondary" href="https://github.com/popvarachat/todo-agent-lab" target="_blank" rel="noopener">Repository ↗</a>
-    <a class="btn secondary" href="https://github.com/popvarachat/todo-agent-lab/releases/tag/v0.2.0" target="_blank" rel="noopener">Release v0.2.0 ↗</a>
+    <a class="btn secondary" href="https://github.com/popvarachat/todo-agent-lab/releases/tag/v0.3.0" target="_blank" rel="noopener">Release v0.3.0 ↗</a>
   </div>
 </section>
 
 <section class="metrics">
   <div class="metric"><b>10</b><span>Business use-case paths</span></div>
-  <div class="metric"><b>26</b><span>Active tasks detected in pilot</span></div>
+  <div class="metric"><b>27</b><span>Active tasks detected in pilot</span></div>
   <div class="metric"><b>28</b><span>Action proposals generated</span></div>
-  <div class="metric"><b>5/5</b><span>Automated workflow tests passed</span></div>
-  <div class="metric"><b>PASS</b><span>Golden UAT write-back</span></div>
+  <div class="metric"><b>6/6</b><span>Automated workflow tests passed</span></div>
+  <div class="metric"><b>DUAL</b><span>RDC + JEV Shadow Decision</span></div>
 </section>
 
 <div id="workflow" class="section-head">
@@ -107,36 +109,45 @@ h1{position:relative;margin:8px 0 12px;font-size:clamp(34px,5vw,62px);line-heigh
     <div class="node"><strong>Provider Adapter</strong><small>Planner · To Do · JSON · future systems</small></div>
   </article>
   <article class="lane lane3">
-    <h3>3. Agent Intelligence</h3><p>Analyze, enrich, prioritize</p>
+    <h3>3. Primary Agent</h3><p>Analyze, enrich, prioritize</p>
     <div class="node"><strong>Read Agent</strong><small>Read task and context safely</small></div>
-    <div class="node"><strong>Morning Radar</strong><small>Daily executive focus</small></div>
-    <div class="node"><strong>Stale Detector</strong><small>Detect inactive work</small></div>
-    <div class="node"><strong>Task Doctor</strong><small>Check owner, due, description, checklist</small></div>
-    <div class="node"><strong>HOLD Intelligence</strong><small>Reason · resume condition · review date</small></div>
-    <div class="node"><strong>Smart Priority + Weekly Brief</strong><small>Rank work and summarize for executives</small></div>
+    <div class="node"><strong>Morning Radar + Stale</strong><small>Find focus, overdue and inactive work</small></div>
+    <div class="node"><strong>Task Doctor + HOLD</strong><small>Check task quality and governance gaps</small></div>
+    <div class="node"><strong>Smart Priority + Weekly Brief</strong><small>Rank work and form the primary recommendation</small></div>
+    <div class="node"><strong>Primary Decision Draft</strong><small>Todo Agent proposes what should happen next</small></div>
   </article>
   <article class="lane lane4">
-    <h3>4. Executive Decision</h3><p>Review before action</p>
-    <div class="node"><strong>Executive Output</strong><small>Key insights and recommended actions</small></div>
-    <div class="decision">Action needed?</div>
-    <div class="node"><strong>Action Proposal</strong><small>Specific change, rationale and impact</small></div>
-    <div class="decision">Human Approve?</div>
+    <h3>4. Dual Shadow Council</h3><p>Independent second opinions</p>
+    <div class="shadowpair">
+      <div class="node"><span class="shadowbadge">SHADOW</span><strong>RDC Shadow</strong><small>Operational feasibility, execution risk, tool readiness and recovery path</small></div>
+      <div class="node"><span class="shadowbadge">SHADOW</span><strong>JEV Shadow</strong><small>Typed decision review: risk, evidence, routing, capability gap and done signal</small></div>
+    </div>
+    <div class="arrow">↓</div>
+    <div class="node"><strong>Shadow Compare</strong><small>Compare Primary vs RDC vs JEV. Disagreement increases scrutiny; shadow never executes.</small></div>
+    <div class="decision">Consensus / Conflict?</div>
+    <div class="node"><strong>Decision Confidence</strong><small>Attach risks, disagreement and recommended escalation to executive proposal</small></div>
   </article>
   <article class="lane lane5">
-    <h3>5. Controlled Execution</h3><p>Fail-closed write path</p>
-    <div class="node"><strong>Dry Run</strong><small>Preview the intended change</small></div>
-    <div class="arrow">↓</div>
-    <div class="node"><strong>Microsoft Graph Write</strong><small>Create or update an approved task</small></div>
-    <div class="arrow">↓</div>
-    <div class="node"><strong>Read-back Verify</strong><small>Confirm Graph returned expected state</small></div>
-    <div class="node"><strong>Audit Log</strong><small>Record approval attempt and execution</small></div>
+    <h3>5. Executive Decision</h3><p>Human authority remains final</p>
+    <div class="node"><strong>Executive Output</strong><small>Primary recommendation + RDC shadow + JEV shadow</small></div>
+    <div class="decision">Action needed?</div>
+    <div class="node"><strong>Action Proposal</strong><small>Specific change, rationale, impact and shadow signals</small></div>
+    <div class="decision">Human Approve?</div>
   </article>
   <article class="lane lane6">
-    <h3>6. Business Value Check</h3><p>Measure and improve</p>
+    <h3>6. Controlled Execution</h3><p>Fail-closed write path</p>
+    <div class="node"><strong>Dry Run</strong><small>Preview the intended change</small></div>
+    <div class="arrow">↓</div>
+    <div class="node"><strong>RDC Execution Plane</strong><small>MCP / CLI / API / OI executes only approved work</small></div>
+    <div class="node"><strong>Microsoft Graph Write</strong><small>Create or update the approved task</small></div>
+    <div class="node"><strong>Read-back Verify + Audit</strong><small>Confirm outcome and record execution evidence</small></div>
+  </article>
+  <article class="lane lane7">
+    <h3>7. Business Value</h3><p>Measure, learn, improve</p>
     <div class="node"><strong>KPI Review</strong><small>Time saved · task quality · missed follow-ups</small></div>
-    <div class="decision">UAT Passed?</div>
-    <div class="node"><strong>Pilot Go Live</strong><small>Deploy to wider team</small></div>
-    <div class="node"><strong>Adjust Rules</strong><small>Tune thresholds and agent logic</small></div>
+    <div class="decision">UAT / KPI Passed?</div>
+    <div class="node"><strong>Pilot Go Live</strong><small>Deploy to wider team with the same shadow policy</small></div>
+    <div class="node"><strong>Feedback Loop</strong><small>Tune rules, thresholds and shadow triggers</small></div>
   </article>
 </section>
 
@@ -146,6 +157,7 @@ h1{position:relative;margin:8px 0 12px;font-size:clamp(34px,5vw,62px);line-heigh
     <div class="chips">
       <span class="chip">READ · Analyze only</span>
       <span class="chip">SUGGEST · Recommend next action</span>
+      <span class="chip">SHADOW · RDC + JEV advise only</span>
       <span class="chip">WRITE · Human approval required</span>
       <span class="chip">VERIFY · Read-back after write</span>
       <span class="chip">AUDIT · Every execution logged</span>
@@ -155,9 +167,10 @@ h1{position:relative;margin:8px 0 12px;font-size:clamp(34px,5vw,62px);line-heigh
     <h3>Current Pilot Status</h3>
     <div class="chips">
       <span class="chip">Planner: Connected</span>
+      <span class="chip">RDC Shadow: Enabled</span>
+      <span class="chip">JEV: READY_SHADOW · jev-latest</span>
       <span class="chip">Write-back: Golden UAT PASS</span>
-      <span class="chip">GitHub: Forkable</span>
-      <span class="chip">CI: Passing</span>
+      <span class="chip">GitHub: Forkable · CI Passing</span>
     </div>
   </div>
 </section>
@@ -197,7 +210,7 @@ h1{position:relative;margin:8px 0 12px;font-size:clamp(34px,5vw,62px);line-heigh
 
 <footer class="footer">
   <span>Todo Agent Lab · Public GitHub Edition</span>
-  <span>Architecture: Provider Adapter → Canonical Task Model → Agent Layer → Human Gate → Verify & Audit</span>
+  <span>Architecture: Provider Adapter → Primary Agent → RDC + JEV Dual Shadow → Human Gate → Controlled Execution → Verify & Audit</span>
 </footer>
 </div>
 </body>

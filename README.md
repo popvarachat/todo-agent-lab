@@ -197,3 +197,41 @@ python -m todo_agent.cli intake --kind email --file examples\\email_sample.txt
 ```
 
 These create drafts only. ChatGPT / OI can enrich the draft before any Planner write is proposed.
+
+## v0.3 Dual Shadow Decision
+
+Todo Agent now uses a **Primary + Dual Shadow** decision pattern:
+
+```text
+Business Input
+   |
+Planner / Todo Source of Truth
+   |
+Todo Agent Primary Analysis
+   |----------------------|
+   v                      v
+RDC Shadow             JEV Shadow
+Operational risk       Typed decision review
+   |                      |
+   +----------+-----------+
+              v
+       Shadow Compare
+              |
+       Executive Proposal
+              |
+          Human Gate
+              |
+ Dry Run -> RDC Execution -> Graph Write
+              |
+      Read-back Verify
+              |
+           Audit
+```
+
+- RDC Shadow checks operational feasibility and execution risk.
+- JEV Shadow reuses the shared RDC JEV runtime and reviews risk, evidence, routing, capability gaps and completion signals.
+- Both shadows have **zero execution authority**.
+- Hard policy and the Human Gate always take precedence.
+- JEV is batched once per executive analyze cycle to control latency and API usage.
+
+See `docs/SHADOW_DECISION.md`.

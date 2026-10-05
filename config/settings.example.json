@@ -6,5 +6,6 @@
   "stale_days": 14,
   "due_soon_days": 7,
   "read_only": true,
-  "human_gate": true
+  "human_gate": true,
+  "shadow_mode": true
 }
