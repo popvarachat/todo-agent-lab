@@ -1,8 +1,27 @@
 name: tests
 
 on:
+  workflow_dispatch:
   push:
+    branches: [main]
+    paths:
+      - "todo_agent/**"
+      - "tests/**"
+      - "config/**"
+      - "scripts/**"
+      - ".github/workflows/tests.yml"
   pull_request:
+    branches: [main]
+    paths:
+      - "todo_agent/**"
+      - "tests/**"
+      - "config/**"
+      - "scripts/**"
+      - ".github/workflows/tests.yml"
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
